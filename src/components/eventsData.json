@@ -1,0 +1,58 @@
+[
+    {
+        "id": 1,
+        "date": "2025-02-06",
+        "startTime": "09:00",
+        "endTime": "10:30",
+        "color": "blue",
+        "title": "Team Meeting"
+    },
+    {
+        "id": 2,
+        "date": "2025-02-06",
+        "startTime": "11:00",
+        "endTime": "12:00",
+        "color": "green",
+        "title": "Client Call"
+    },
+    {
+        "id": 3,
+        "date": "2025-02-07",
+        "startTime": "14:00",
+        "endTime": "15:30",
+        "color": "red",
+        "title": "Project Review"
+    },
+    {
+        "id": 4,
+        "date": "2025-02-08",
+        "startTime": "16:00",
+        "endTime": "17:30",
+        "color": "purple",
+        "title": "Code Deployment"
+    },
+    {
+        "id": 5,
+        "date": "2025-02-09",
+        "startTime": "08:00",
+        "endTime": "09:30",
+        "color": "orange",
+        "title": "Workout Session"
+    },
+    {
+        "id": 6,
+        "date": "2025-02-10",
+        "startTime": "13:00",
+        "endTime": "14:30",
+        "color": "yellow",
+        "title": "Lunch with Friend"
+    },
+    {
+        "id": 7,
+        "date": "2025-02-11",
+        "startTime": "18:00",
+        "endTime": "19:30",
+        "color": "teal",
+        "title": "Dinner Reservation"
+    }
+]
