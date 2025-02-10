@@ -1,9 +1,40 @@
 /* eslint-disable react/prop-types */
-
 import { isToday, formatDateToYYYYMMDD, getDaysInMonth, getFirstDayOfMonth } from "../utils/calendarUtils";
 import { Clock, ChevronRight } from 'lucide-react';
 
 const CalendarGrid = ({ currentDate, events, onDateClick, onEventClick, onShowMoreEvents }) => {
+    // Calculate if an event is effectively expired (less than 25% time remaining)
+    const isEventExpired = (event) => {
+        const now = new Date();
+        const eventDate = new Date(event.date);
+
+        // Parse start and end times
+        const [startHours, startMinutes] = event.startTime.split(':').map(Number);
+        const [endHours, endMinutes] = event.endTime.split(':').map(Number);
+
+        // Set up event start and end times
+        const eventStart = new Date(eventDate);
+        eventStart.setHours(startHours, startMinutes, 0);
+
+        const eventEnd = new Date(eventDate);
+        eventEnd.setHours(endHours, endMinutes, 0);
+
+        // Calculate total duration in minutes
+        const totalDurationMinutes = (eventEnd - eventStart) / (1000 * 60);
+
+        // If the event date is in the past, it's expired
+        if (now > eventEnd) return true;
+
+        // If the event hasn't started yet, it's not expired
+        if (now < eventStart) return false;
+
+        // Calculate remaining time in minutes
+        const remainingMinutes = (eventEnd - now) / (1000 * 60);
+
+        // Check if less than 25% time remains
+        return remainingMinutes < (totalDurationMinutes * 0.25);
+    };
+
     const getEventClasses = (event, dateStr) => {
         const dayEvents = events[dateStr] || [];
         const isConflict = dayEvents.some((e) =>
@@ -13,18 +44,22 @@ const CalendarGrid = ({ currentDate, events, onDateClick, onEventClick, onShowMo
                 (event.startTime <= e.startTime && event.endTime >= e.endTime))
         );
 
+        const expired = isEventExpired(event);
+        const baseClasses = expired
+            ? "opacity-60 line-through"
+            : "";
+
         if (isConflict) {
-            return "bg-gradient-to-r from-rose-50 to-rose-100 border-l-2 border-rose-500";
+            return `${baseClasses} bg-gradient-to-r from-rose-50 to-rose-100 border-l-2 border-rose-500`;
         }
 
-        // Alternate colors for non-conflicting events
         const colorSchemes = [
             "bg-gradient-to-r from-blue-50 to-indigo-50 border-l-2 border-blue-500",
             "bg-gradient-to-r from-emerald-50 to-teal-50 border-l-2 border-emerald-500",
             "bg-gradient-to-r from-violet-50 to-purple-50 border-l-2 border-violet-500"
         ];
 
-        return colorSchemes[event.id % colorSchemes.length];
+        return `${baseClasses} ${colorSchemes[event.id % colorSchemes.length]}`;
     };
 
     const renderCalendarDays = () => {
@@ -102,22 +137,23 @@ const CalendarGrid = ({ currentDate, events, onDateClick, onEventClick, onShowMo
                                     onEventClick(event, e);
                                 }}
                                 className={`
-                                p-2 rounded-lg w-full flex flex-col items-start
-                                text-xs font-medium leading-tight
-                                transition-all duration-300
-                                hover:translate-x-1 hover:shadow-md
-                                ${getEventClasses(event, dateStr)}
-                            `}
+                                    p-2 rounded-lg w-full flex flex-col items-start
+                                    text-xs font-medium leading-tight
+                                    transition-all duration-300
+                                    hover:translate-x-1 hover:shadow-md
+                                    ${getEventClasses(event, dateStr)}
+                                `}
                             >
                                 <div className="w-full truncate min-w-0 text-gray-700">
                                     {event.title}
                                 </div>
                                 <div className="flex items-center mt-1 text-gray-500 text-[11px]">
                                     <Clock size={12} className="mr-1 flex-shrink-0" />
-                                    <span className="truncate min-w-0">{event.startTime}</span>
+                                    <span className="truncate min-w-0">
+                                        {event.startTime} - {event.endTime}
+                                    </span>
                                 </div>
                             </div>
-
                         ))}
 
                         {dayEvents.length > 2 && (
